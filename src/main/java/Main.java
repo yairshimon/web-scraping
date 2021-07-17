@@ -39,6 +39,7 @@ public class Main {
                 if (countTextOfTitle == textOfTitle + 2 || countTextOfTitle == textOfTitle + 1 || countTextOfTitle == textOfTitle || countTextOfTitle - 2 == textOfTitle || countTextOfTitle - 1 == textOfTitle)
                     counterPoint += 250;
                 System.out.println("You won " + counterPoint + " points;");
+                System.out.println(countTextOfTitle);
                 break;
             case 2:
                 System.out.println("Please wait a few seconds for the data to load");

@@ -5,23 +5,80 @@ import org.jsoup.select.Elements;
 import java.util.HashMap;
 import java.util.Map;
 public class MakoRobot extends BaseRobot {
-    private String rootWebsiteUrl;
-    
-    public MakoRobot(String rootWebsiteUrl) {
-        this.rootWebsiteUrl = rootWebsiteUrl;
-    }
+private String rootWebsiteUrl;
 
-    public String getRootWebsiteUrl() {
+public MakoRobot(String rootWebsiteUrl) {
+        this.rootWebsiteUrl = rootWebsiteUrl;
+        }
+
+public String getRootWebsiteUrl() {
         return rootWebsiteUrl;
-    }
+        }
 
-    public void setRootWebsiteUrl(String rootWebsiteUrl) {
+public void setRootWebsiteUrl(String rootWebsiteUrl) {
         this.rootWebsiteUrl = rootWebsiteUrl;
-    }
+        }
 
-    public  int countInArticlesTitles(String text) {
-        return 0;
+public  int countInArticlesTitles(String text) {
+    int j = 0;
+    int count = 0;
+    Document web;
+    String mainTitle;
+    String subTitle;
+    Element link;
+    String li;
+    try {
+        Document website = Jsoup.connect("https://www.mako.co.il/").get();
+        Elements titles = website.getElementsByClass("headLine");
+        Elements titles1 = titles.parents();
+        Elements titles2;
+        while (j < 34) { //Goes through the 5 main report on the site
+            link = titles1.get(j).getElementsByTag("a").get(0);
+            li = link.attr("href");
+            if (j == 0) {
+                j = 16;
+            }
+            j = j + 4;
+            if (li.charAt(0) == 'h') {
+                web = Jsoup.connect(li).get();
+            } else {
+                web = Jsoup.connect("https://www.mako.co.il/" + li).get();
+            }
+            titles2 = web.getElementsByTag("h1");
+            mainTitle = titles2.text();
+            if (mainTitle.contains(text)) {
+                count++;
+            }
+            titles2 = web.getElementsByTag("h2");
+            subTitle = titles2.text();
+            if (subTitle.contains(text)) {
+                count++;
+            }
+        }
+        titles1 = website.getElementsByClass("element");
+        for (int i = 9; i < titles1.size(); i++) { //Goes over the rest of the site reports
+            link = titles1.get(i).getElementsByTag("a").get(0);
+            String linked = link.attr("href");
+            if (linked.charAt(0) == 'h')
+                web = Jsoup.connect(linked).get();
+            else
+                web = Jsoup.connect("https://www.mako.co.il/" + linked).get();
+            titles2 = web.getElementsByTag("h1");
+            mainTitle = titles2.text();
+            if (mainTitle.contains(text)) {
+                count++;
+            }
+            titles2 = web.getElementsByTag("h2");
+            subTitle = titles2.text();
+            if (subTitle.contains(text)) {
+                count++;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return count;
+}
 
     public  String getLongestArticleTitle(){
         int tempLongest = -1;
