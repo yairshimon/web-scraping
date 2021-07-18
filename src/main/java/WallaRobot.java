@@ -10,7 +10,7 @@ public class WallaRobot extends BaseRobot {
     private String rootWebsiteUrl;
 
     public WallaRobot(String rootWebsiteUrl) {
-        this.rootWebsiteUrl = rootWebsiteUrl;
+        super(rootWebsiteUrl);
     }
 
     public String getRootWebsiteUrl() {

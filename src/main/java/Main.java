@@ -11,8 +11,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Choose a site where you want to play\n" +
                 "For Mako click 1\n" +
-                "For Ynet pressure 2\n" +
-                "For Walla click 3");
+                "For Walla pressure 2\n" +
+                "For Ynet click 3");
         int yourChoice = scanner.nextInt();
         switch (yourChoice){
             case 1:

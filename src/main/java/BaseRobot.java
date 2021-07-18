@@ -2,7 +2,9 @@ import java.util.Map;
 
 public abstract class BaseRobot {
     private String rootWebsiteUrl;
-
+    public BaseRobot(String rootWebsiteUrl){
+      this.rootWebsiteUrl = rootWebsiteUrl;
+    }
     public String getRootWebsiteUrl() {
         return rootWebsiteUrl;
     }

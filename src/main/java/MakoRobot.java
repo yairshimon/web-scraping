@@ -8,7 +8,7 @@ public class MakoRobot extends BaseRobot {
 private String rootWebsiteUrl;
 
 public MakoRobot(String rootWebsiteUrl) {
-        this.rootWebsiteUrl = rootWebsiteUrl;
+    super(rootWebsiteUrl);
         }
 
 public String getRootWebsiteUrl() {
