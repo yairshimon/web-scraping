@@ -5,8 +5,6 @@ import org.jsoup.select.Elements;
 import java.util.HashMap;
 import java.util.Map;
 public class MakoRobot extends BaseRobot {
-private String rootWebsiteUrl;
-
 public MakoRobot(String rootWebsiteUrl) {
     super(rootWebsiteUrl);
         }
@@ -20,29 +18,29 @@ public void setRootWebsiteUrl(String rootWebsiteUrl) {
         }
 
 public  int countInArticlesTitles(String text) {
-    int j = 0;
+    int locationMainTitles = 0;
     int count = 0;
     Document web;
     String mainTitle;
     String subTitle;
     Element link;
-    String li;
+    String href;
     try {
-        Document website = Jsoup.connect("https://www.mako.co.il/").get();
+        Document website = Jsoup.connect(this.rootWebsiteUrl).get();
         Elements titles = website.getElementsByClass("headLine");
         Elements titles1 = titles.parents();
         Elements titles2;
-        while (j < 34) { //Goes through the 5 main report on the site
-            link = titles1.get(j).getElementsByTag("a").get(0);
-            li = link.attr("href");
-            if (j == 0) {
-                j = 16;
+        while (locationMainTitles < 34) { //Goes through the 5 main report on the site
+            link = titles1.get(locationMainTitles).getElementsByTag("a").get(0);
+            href = link.attr("href");
+            if (locationMainTitles == 0) {
+                locationMainTitles = 16;
             }
-            j = j + 4;
-            if (li.charAt(0) == 'h') {
-                web = Jsoup.connect(li).get();
+            locationMainTitles = locationMainTitles + 4;
+            if (href.charAt(0) == 'h') {
+                web = Jsoup.connect(href).get();
             } else {
-                web = Jsoup.connect("https://www.mako.co.il/" + li).get();
+                web = Jsoup.connect("https://www.mako.co.il/" + href).get();
             }
             titles2 = web.getElementsByTag("h1");
             mainTitle = titles2.text();
@@ -59,6 +57,7 @@ public  int countInArticlesTitles(String text) {
         for (int i = 9; i < titles1.size(); i++) { //Goes over the rest of the site reports
             link = titles1.get(i).getElementsByTag("a").get(0);
             String linked = link.attr("href");
+            try{
             if (linked.charAt(0) == 'h')
                 web = Jsoup.connect(linked).get();
             else
@@ -73,6 +72,7 @@ public  int countInArticlesTitles(String text) {
             if (subTitle.contains(text)) {
                 count++;
             }
+            }catch (StringIndexOutOfBoundsException ignored){}
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -83,8 +83,8 @@ public  int countInArticlesTitles(String text) {
     public  String getLongestArticleTitle(){
         int tempLongest = -1;
         String titleArticleLongest = null;
-        int c = 0;
-        int q = 0;
+        int countWords = 0;
+        int locationMainTitles = 0;
         Map<String, Integer> wordInMako1 = new HashMap<>();
         Document web;
         try {
@@ -92,24 +92,24 @@ public  int countInArticlesTitles(String text) {
             Elements titles = website.getElementsByClass("headLine");
             Elements titles6 = titles.parents();
             Elements titles5;
-            Element T;
-            String li;
-            while (q < 34) {
-                T = titles6.get(q).getElementsByTag("a").get(0);
-                li = T.attr("href");
-                if (q == 0) {
-                    q = 16;
+            Element wordInWebsite;
+            String link1;
+            while (locationMainTitles < 34) {
+                wordInWebsite = titles6.get(locationMainTitles).getElementsByTag("a").get(0);
+                link1 = wordInWebsite.attr("href");
+                if (locationMainTitles == 0) {
+                    locationMainTitles = 16;
                 }
-                q = q + 4;
-                if (li.charAt(0) == 'h')
-                    web = Jsoup.connect(li).get();
+                locationMainTitles = locationMainTitles + 4;
+                if (link1.charAt(0) == 'h')
+                    web = Jsoup.connect(link1).get();
                 else
-                    web = Jsoup.connect(this.rootWebsiteUrl + li).get();
+                    web = Jsoup.connect(this.rootWebsiteUrl + link1).get();
                 titles5 = web.getElementsByTag("p");
                 for (Element element : titles5) {
                     String[] s = element.text().split(" ");
                     for (String value : s) {
-                        c++;
+                        countWords++;
                         if (wordInMako1.containsKey(value)) {
                             int y = wordInMako1.get(value) + 1;
                             wordInMako1.put(value, y);
@@ -118,26 +118,27 @@ public  int countInArticlesTitles(String text) {
                         }
                     }
                 }
-                if(c > tempLongest){
-                    tempLongest = c;
-                    titleArticleLongest = T.text();
-                    c = 0;
+                if(countWords > tempLongest){
+                    tempLongest = countWords;
+                    titleArticleLongest = wordInWebsite.text();
+                    countWords = 0;
                 }
             }
-            Element link;
+            Element wordInWebsite1;
             Elements titles1 = website.getElementsByClass("element");
             for (int o = 9; o < titles1.size(); o++) {
-                link = titles1.get(o).getElementsByTag("a").get(0);
-                String linked = link.attr("href");
-                if (linked.charAt(0) == 'h')
-                    web = Jsoup.connect(linked).get();
-                else
-                    web = Jsoup.connect(this.rootWebsiteUrl + linked).get();
+                wordInWebsite1 = titles1.get(o).getElementsByTag("a").get(0);
+                String linked = wordInWebsite1.attr("href");
+                try {
+                    if (linked.charAt(0) == 'h')
+                        web = Jsoup.connect(linked).get();
+                    else
+                        web = Jsoup.connect(this.rootWebsiteUrl + linked).get();
                 titles5 = web.getElementsByTag("p");
                 for (Element element : titles5) {
                     String[] s = element.text().split(" ");
                     for (String value : s) {
-                        c++;
+                        countWords++;
                         if (wordInMako1.containsKey(value)) {
                             int y = wordInMako1.get(value) + 1;
                             wordInMako1.put(value, y);
@@ -146,11 +147,12 @@ public  int countInArticlesTitles(String text) {
                         }
                     }
                 }
-                if(c > tempLongest){
-                    tempLongest = c;
-                    titleArticleLongest = link.text();
-                    c = 0;
+                if(countWords > tempLongest){
+                    tempLongest = countWords;
+                    titleArticleLongest = wordInWebsite1.text();
+                    countWords = 0;
                 }
+                }catch (StringIndexOutOfBoundsException ignored){}
             }
 
         } catch (Exception e) {
@@ -161,29 +163,29 @@ public  int countInArticlesTitles(String text) {
     }
 
     public Map<String, Integer> getWordsStatistics() {
-        int q = 0;
+        int locationMainTitles = 0;
         Map<String, Integer> wordInMako1 = new HashMap<>();
         Document web;
         try {
             Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements titles = website.getElementsByClass("headLine");
-            Elements titles6 = titles.parents();
-            Elements titles5;
-            Element T;
-            String li;
-            while (q < 34) {
-                T = titles6.get(q).getElementsByTag("a").get(0);
-                li = T.attr("href");
-                if (q == 0) {
-                    q = 16;
+            Elements linkMainTitles = titles.parents();
+            Elements wordsInWebsite;
+            Element enterLink;
+            String link1;
+            while (locationMainTitles < 34) {
+                enterLink = linkMainTitles.get(locationMainTitles).getElementsByTag("a").get(0);
+                link1 = enterLink.attr("href");
+                if (locationMainTitles == 0) {
+                    locationMainTitles = 16;
                 }
-                q = q + 4;
-                if (li.charAt(0) == 'h')
-                    web = Jsoup.connect(li).get();
+                locationMainTitles = locationMainTitles + 4;
+                if (link1.charAt(0) == 'h')
+                    web = Jsoup.connect(link1).get();
                 else
-                    web = Jsoup.connect(this.rootWebsiteUrl + li).get();
-                titles5 = web.getElementsByTag("p");
-                for (Element element : titles5) {
+                    web = Jsoup.connect(this.rootWebsiteUrl + link1).get();
+                wordsInWebsite = web.getElementsByTag("p");
+                for (Element element : wordsInWebsite) {
                     String[] s = element.text().split(" ");
                     for (String value : s) {
                         if (wordInMako1.containsKey(value)) {
@@ -200,12 +202,13 @@ public  int countInArticlesTitles(String text) {
             for (int o = 9; o < titles1.size(); o++) {
                 link = titles1.get(o).getElementsByTag("a").get(0);
                 String linked = link.attr("href");
+                try{
                 if (linked.charAt(0) == 'h')
                     web = Jsoup.connect(linked).get();
                 else
                     web = Jsoup.connect(this.rootWebsiteUrl + linked).get();
-                titles5 = web.getElementsByTag("p");
-                for (Element element : titles5) {
+                wordsInWebsite = web.getElementsByTag("p");
+                for (Element element : wordsInWebsite) {
                     String[] s = element.text().split(" ");
                     for (String value : s) {
                         if (wordInMako1.containsKey(value)) {
@@ -216,6 +219,7 @@ public  int countInArticlesTitles(String text) {
                         }
                     }
                 }
+                }catch (StringIndexOutOfBoundsException ignored){}
             }
 
         } catch (Exception e) {

@@ -30,21 +30,22 @@ public class Main {
                         counterPoint += wordsInWeb.get(words[i]);
                     }
                 }
-                System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
                 scanner.nextLine();
+                do {
+                System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
                 textOfTitles = scanner.nextLine();
+                }while (textOfTitles.length() > 20);
                 System.out.println("How many times does the text you selected appear in the headings on the home page of the site with an accuracy of up to 2 + - you will win 250 points");
                 textOfTitle = scanner.nextInt();
                 countTextOfTitle = makoRobot.countInArticlesTitles(textOfTitles);
                 if (countTextOfTitle == textOfTitle + 2 || countTextOfTitle == textOfTitle + 1 || countTextOfTitle == textOfTitle || countTextOfTitle - 2 == textOfTitle || countTextOfTitle - 1 == textOfTitle)
                     counterPoint += 250;
                 System.out.println("You won " + counterPoint + " points;");
-                System.out.println(countTextOfTitle);
                 break;
             case 2:
                 System.out.println("Please wait a few seconds for the data to load");
                 WallaRobot wallaRobot = new WallaRobot("https://www.walla.co.il/");
-                System.out.println("The longest title on the Mako website is: \n" + wallaRobot.getLongestArticleTitle());
+                System.out.println("The longest title on the Walla website is: \n" + wallaRobot.getLongestArticleTitle());
                 System.out.println("Choose the 5 words that you think appear most on the site");
                 for (int i = 0; i < 5; i++){
                     words[i] = scanner.next();
@@ -56,9 +57,11 @@ public class Main {
                         counterPoint += wordsInWeb.get(words[i]);
                     }
                 }
-                System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
                 scanner.nextLine();
+                do {
+                System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
                 textOfTitles = scanner.nextLine();
+                }while (textOfTitles.length() > 20);
                 System.out.println("How many times does the text you selected appear in the headings on the home page of the site with an accuracy of up to 2 + - you will win 250 points");
                 textOfTitle = scanner.nextInt();
                 countTextOfTitle = wallaRobot.countInArticlesTitles(textOfTitles);
@@ -69,7 +72,7 @@ public class Main {
             case 3:
                 System.out.println("Please wait a few seconds for the data to load");
                 YnetRobot ynetRobot = new YnetRobot("https://www.ynet.co.il/home/0,7340,L-8,00.html");
-                System.out.println("The longest title on the Mako website is: \n" + ynetRobot.getLongestArticleTitle());
+                System.out.println("The longest title on the Ynet website is: \n" + ynetRobot.getLongestArticleTitle());
                 System.out.println("Choose the 5 words that you think appear most on the site");
                 for (int i = 0; i < 5; i++){
                     words[i] = scanner.next();
@@ -81,9 +84,11 @@ public class Main {
                         counterPoint += wordsInWeb.get(words[i]);
                     }
                 }
-                System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
                 scanner.nextLine();
-                textOfTitles = scanner.nextLine();
+                do {
+                    System.out.println("Select text of up to 20 characters that appears in headings on the home page of the site");
+                    textOfTitles = scanner.nextLine();
+                }while (textOfTitles.length() > 20);
                 System.out.println("How many times does the text you selected appear in the headings on the home page of the site with an accuracy of up to 2 + - you will win 250 points");
                 textOfTitle = scanner.nextInt();
                 countTextOfTitle = ynetRobot.countInArticlesTitles(textOfTitles);
@@ -92,6 +97,7 @@ public class Main {
                 System.out.println("You won " + counterPoint + " points;");
                 break;
             default:
+                System.out.println("press 1,2,3 not " + yourChoice);
                 break;
         }
         System.out.println("BY;");

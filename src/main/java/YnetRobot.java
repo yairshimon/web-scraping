@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class YnetRobot extends BaseRobot {
-    private String rootWebsiteUrl;
 
     public YnetRobot(String rootWebsiteUrl) {
         super(rootWebsiteUrl);
@@ -21,46 +20,46 @@ public class YnetRobot extends BaseRobot {
     }
 
     public  Map<String, Integer> getWordsStatistics(){
-        Map<String, Integer> wordInMako1 = new HashMap<>();
+        Map<String, Integer> wordInYnet = new HashMap<>();
         try {
-            Document website = Jsoup.connect("https://www.ynet.co.il/home/0,7340,L-8,00.html").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements titles = website.getElementsByClass("slotTitle");//slotSubTitle
             Document web;
             for (Element title : titles) {
                 try {
-                    Element g = title.getElementsByTag("a").get(0);
-                    String link = g.attr("href");
+                    Element element = title.getElementsByTag("a").get(0);
+                    String link = element.attr("href");
                     web = Jsoup.connect(link).get();
                     Elements titles2 = web.getElementsByClass("text_editor_paragraph");
-                    for (Element element : titles2) {
-                        String[] s = element.text().split(" ");
-                        for (String value : s) {
-                            if (wordInMako1.containsKey(value)) {
-                                int y = wordInMako1.get(value) + 1;
-                                wordInMako1.put(value, y);
+                    for (Element elements : titles2) {
+                        String[] wordInWebsite = elements.text().split(" ");
+                        for (String value : wordInWebsite) {
+                            if (wordInYnet.containsKey(value)) {
+                                int y = wordInYnet.get(value) + 1;
+                                wordInYnet.put(value, y);
                             } else {
-                                wordInMako1.put(value, 1);
+                                wordInYnet.put(value, 1);
                             }
                         }
                     }
-                    Element titles1 = web.getElementsByClass("subTitle").get(0);
-                    String[] s = titles1.text().split(" ");
-                    for (String value : s) {
-                        if (wordInMako1.containsKey(value)) {
-                            int y = wordInMako1.get(value) + 1;
-                            wordInMako1.put(value, y);
+                    Element mainTitle = web.getElementsByClass("subTitle").get(0);
+                    String[] wordInMainTitle = mainTitle.text().split(" ");
+                    for (String value : wordInMainTitle) {
+                        if (wordInYnet.containsKey(value)) {
+                            int y = wordInYnet.get(value) + 1;
+                            wordInYnet.put(value, y);
                         } else {
-                            wordInMako1.put(value, 1);
+                            wordInYnet.put(value, 1);
                         }
                     }
-                    titles1 = web.getElementsByClass("mainTitleWrapper").get(0);
-                    String[] S = titles1.text().split(" ");
-                    for (String value : S) {
-                        if (wordInMako1.containsKey(value)) {
-                            int y = wordInMako1.get(value) + 1;
-                            wordInMako1.put(value, y);
+                    mainTitle = web.getElementsByClass("mainTitleWrapper").get(0);
+                    String[] Subheading = mainTitle.text().split(" ");
+                    for (String value : Subheading) {
+                        if (wordInYnet.containsKey(value)) {
+                            int y = wordInYnet.get(value) + 1;
+                            wordInYnet.put(value, y);
                         } else {
-                            wordInMako1.put(value, 1);
+                            wordInYnet.put(value, 1);
                         }
                     }
                 } catch (Exception ignored) {
@@ -70,7 +69,7 @@ public class YnetRobot extends BaseRobot {
 
         } catch (Exception ignored) {
         }
-        return wordInMako1;
+        return wordInYnet;
     }
 
 
@@ -78,13 +77,13 @@ public class YnetRobot extends BaseRobot {
     public  int countInArticlesTitles(String text){
         int count = 0;
         try {
-            Document website = Jsoup.connect("https://www.ynet.co.il/home/0,7340,L-8,00.html").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements titles = website.getElementsByClass("slotTitle");//slotSubTitle
             Document web;
             for (Element title : titles) {
                 try {
-                    Element g = title.getElementsByTag("a").get(0);
-                    String link = g.attr("href");
+                    Element wordInTitles = title.getElementsByTag("a").get(0);
+                    String link = wordInTitles.attr("href");
                     web = Jsoup.connect(link).get();
                     Element titles1 = web.getElementsByClass("subTitle").get(0);
                     String subTitle = titles1.text();
@@ -103,8 +102,6 @@ public class YnetRobot extends BaseRobot {
 
         }catch (Exception ignored){
         }
-
-
         return count;
     }
 
@@ -113,13 +110,13 @@ public class YnetRobot extends BaseRobot {
         String titleArticleLongest = null;
         int count = 0;
         try {
-            Document website = Jsoup.connect("https://www.ynet.co.il/home/0,7340,L-8,00.html").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements titles = website.getElementsByClass("slotTitle");//slotSubTitle
             Document web;
             for (Element title : titles) {
                 try {
-                    Element g = title.getElementsByTag("a").get(0);
-                    String link = g.attr("href");
+                    Element wordInWebsite = title.getElementsByTag("a").get(0);
+                    String link = wordInWebsite.attr("href");
                     web = Jsoup.connect(link).get();
                     Elements titles2 = web.getElementsByClass("text_editor_paragraph");
                     for (Element element : titles2) {

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WallaRobot extends BaseRobot {
-    private String rootWebsiteUrl;
-
     public WallaRobot(String rootWebsiteUrl) {
         super(rootWebsiteUrl);
     }
@@ -22,16 +20,14 @@ public class WallaRobot extends BaseRobot {
     }
 
     public int countInArticlesTitles(String text) {
-        int tempLongest = 0;
-        String titleArticleLongest = null;
         int count = 0;
         String subTitle;
         try {
-            Document website = Jsoup.connect("https://www.walla.co.il/").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements element = website.getElementsByClass("main-taste");
             Elements linkElement = element.get(0).getElementsByTag("a");
-            for (int i = 0; i < linkElement.size(); i++) {
-                String link = linkElement.get(i).attr("href");
+            for (Element value : linkElement) {
+                String link = value.attr("href");
                 Document web = Jsoup.connect(link).get();
                 Elements e = web.getElementsByClass("item-main-content");
                 Element titles = e.get(0).getElementsByTag("p").get(0);
@@ -46,19 +42,20 @@ public class WallaRobot extends BaseRobot {
 
             Elements elements = website.getElementsByClass("with-roof");
             Element mainArticle = elements.get(0);
-            Element mainTitle = mainArticle.getElementsByTag("h2").get(0);
             Element linkElement1 = mainArticle.getElementsByTag("a").get(0);
             String link = linkElement1.attr("href");
             Document mainArticlePage = Jsoup.connect(link).get();
             Elements titles = mainArticlePage.getElementsByClass("subtitle");
             subTitle = titles.text();
-            if (subTitle.contains(text))
-                count++;
-            Element title = mainArticlePage.getElementsByClass("cover-story-title").get(0);
-            subTitle = title.text();
-            if (subTitle.contains(text))
-                count++;
-        } catch (IOException e) {
+            try {
+                if (subTitle.contains(text))
+                    count++;
+                Element title = mainArticlePage.getElementsByClass("cover-story-title").get(0);
+                subTitle = title.text();
+                if (subTitle.contains(text))
+                    count++;
+            }catch (IndexOutOfBoundsException ignored){}
+    } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -66,52 +63,53 @@ public class WallaRobot extends BaseRobot {
     }
 
     public String getLongestArticleTitle() {
-        String longTitle1 = null;
         int tempLongest = 0;
         String titleArticleLongest = null;
-        int count = 0;
+        int count;
         try {
-            Document website = Jsoup.connect("https://www.walla.co.il/").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements element = website.getElementsByClass("main-taste");
             Elements linkElement = element.get(0).getElementsByTag("a");
-            for (int i = 0; i < linkElement.size(); i++) {
-                String link = linkElement.get(i).attr("href");
+            for (Element value : linkElement) {
+                String link = value.attr("href");
                 Document web = Jsoup.connect(link).get();
                 Elements e = web.getElementsByClass("item-main-content");
                 String[] s = e.text().split(" ");
                 count = s.length;
                 if (count > tempLongest) {
                     tempLongest = count;
-                    count = 0;
-                    titleArticleLongest = linkElement.get(i).text();
+                    titleArticleLongest = value.text();
                 }
 
             }
             Elements elements = website.getElementsByClass("with-roof");
             Element mainArticle = elements.get(0);
-            Element mainTitle = mainArticle.getElementsByTag("h2").get(0);
             Element linkElement1 = mainArticle.getElementsByTag("a").get(0);
             String link = linkElement1.attr("href");
             Document mainArticlePage = Jsoup.connect(link).get();
             Elements titles = mainArticlePage.getElementsByTag("p");
-            String longTitle;
-            for (int i = -1; i < titles.size(); i++) {// I started from minus 1 so that for is in minus 1 added the main title of the main article to the map
-                if (i == -1) {
-                    Element title = mainArticlePage.getElementsByClass("cover-story-title").get(0);
-                    longTitle = title.text();
 
-                } else
-                    longTitle = titles.get(i).text();
-                String[] s = longTitle.split(" ");
-                count =+ s.length;
-                if (count > tempLongest) {
-                    tempLongest = count;
-                    titleArticleLongest = longTitle;
-                    break;
+            try {
+                String longTitle =null;
+
+                for (int i = -1; i < titles.size(); i++) {// I started from minus 1 so that for is in minus 1 added the main title of the main article to the map
+                    if (i == -1) {
+                        Element title = mainArticlePage.getElementsByClass("cover-story-title").get(0);
+                        longTitle = title.text();
+
+                    } else
+                        longTitle = titles.get(i).text();
                 }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+
+                String[] s = longTitle.split(" ");
+                count = +s.length;
+                if (count > tempLongest) {
+                    titleArticleLongest = longTitle;
+                }
+
+            }catch (IndexOutOfBoundsException ignored){}
+        } catch (IOException ignored) {
         }
 
         return titleArticleLongest;
@@ -121,11 +119,11 @@ public class WallaRobot extends BaseRobot {
     public Map<String, Integer> getWordsStatistics() {
         Map<String, Integer> wordInWalla = new HashMap<>();
         try {
-            Document website = Jsoup.connect("https://www.walla.co.il/").get();
+            Document website = Jsoup.connect(this.rootWebsiteUrl).get();
             Elements element = website.getElementsByClass("main-taste");
             Elements linkElement = element.get(0).getElementsByTag("a");
-            for (int i = 0; i < linkElement.size(); i++) {
-                String link = linkElement.get(i).attr("href");
+            for (Element item : linkElement) {
+                String link = item.attr("href");
                 Document web = Jsoup.connect(link).get();
                 Elements e = web.getElementsByClass("item-main-content");
                 String[] s = e.text().split(" ");
@@ -140,11 +138,11 @@ public class WallaRobot extends BaseRobot {
             }
             Elements elements = website.getElementsByClass("with-roof");
             Element mainArticle = elements.get(0);
-            Element mainTitle = mainArticle.getElementsByTag("h2").get(0);
             Element linkElement1 = mainArticle.getElementsByTag("a").get(0);
             String link = linkElement1.attr("href");
             Document mainArticlePage = Jsoup.connect(link).get();
             Elements titles = mainArticlePage.getElementsByTag("p");
+            try{
             String longTitle;
             for (int i = -1; i < titles.size(); i++) {// I started from minus 1 so that for is in minus 1 added the main title of the main article to the map
                 if (i == -1) {
@@ -153,13 +151,14 @@ public class WallaRobot extends BaseRobot {
                 } else
                     longTitle = titles.get(i).text();
                 String[] s = longTitle.split(" ");
-                for (int j = 0; j < s.length; j++) {
-                    if (wordInWalla.containsKey(s[j])) {
-                        wordInWalla.put(s[j], wordInWalla.get(s[j]) + 1);
+                for (String value : s) {
+                    if (wordInWalla.containsKey(value)) {
+                        wordInWalla.put(value, wordInWalla.get(value) + 1);
                     } else
-                        wordInWalla.put(s[j], 1);
+                        wordInWalla.put(value, 1);
                 }
             }
+            }catch (IndexOutOfBoundsException ignored){}
         } catch (IOException e) {
             e.printStackTrace();
         }
